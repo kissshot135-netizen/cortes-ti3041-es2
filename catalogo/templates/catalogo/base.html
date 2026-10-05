@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Ferretería{% endblock %}</title>
+    <style>
+        :root { color-scheme: light; font-family: Arial, sans-serif; color: #1d2939; background: #f5f7fa; }
+        body { margin: 0; }
+        header { background: #16324f; color: white; padding: 1rem max(1rem, calc((100% - 1000px) / 2)); }
+        nav { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; }
+        nav a { color: white; text-decoration: none; font-weight: 600; }
+        nav .brand { font-size: 1.2rem; margin-right: auto; }
+        nav form { margin: 0; }
+        main { max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+        .panel, .product { background: white; border: 1px solid #d9e1ea; border-radius: 10px; padding: 1.25rem; }
+        .products { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1rem; }
+        .product h2 { margin-top: 0; }
+        button, .button { display: inline-block; border: 0; border-radius: 6px; background: #176b55; color: white; cursor: pointer; padding: .65rem .9rem; text-decoration: none; font: inherit; }
+        button.danger { background: #a83232; }
+        input { box-sizing: border-box; max-width: 100%; padding: .55rem; border: 1px solid #aab7c4; border-radius: 5px; }
+        label { font-weight: 600; }
+        .messages { list-style: none; padding: 0; }
+        .messages li { background: #e8f5ee; border-left: 4px solid #20804e; margin: .5rem 0; padding: .8rem; }
+        .messages .error { background: #fff0ee; border-color: #b6382f; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border-bottom: 1px solid #d9e1ea; padding: .7rem; text-align: left; }
+        .muted { color: #596879; }
+        .inline { display: inline-flex; align-items: center; gap: .5rem; }
+        footer { max-width: 1000px; margin: 3rem auto 1rem; padding: 0 1rem; color: #596879; }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <a class="brand" href="{% url 'inicio' %}">Ferretería</a>
+            <a href="{% url 'lista_productos' %}">Catálogo</a>
+            {% if user.is_authenticated %}
+                {% if user.is_staff %}<a href="{% url 'gestionar_productos' %}">Administración</a>{% endif %}
+                <span>Hola, {{ user.username }}</span>
+                <form method="post" action="{% url 'salir' %}">
+                    {% csrf_token %}
+                    <button type="submit">Salir</button>
+                </form>
+            {% else %}
+                <a href="{% url 'ingreso' %}">Ingresar</a>
+                <a href="{% url 'registro' %}">Crear cuenta</a>
+            {% endif %}
+        </nav>
+    </header>
+    <main>
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>Catálogo de ferretería</footer>
+</body>
+</html>

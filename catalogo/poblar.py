@@ -1,13 +1,14 @@
 import os
+import sys
+from pathlib import Path
+
 import django
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
 from catalogo.models import Producto
-
-# Limpiar registros existentes
-Producto.objects.all().delete()
 
 productos = [
     {"nombre": "Martillo de Uña 16 oz", "categoria": "Herramientas Manuales", "precio": 8990, "stock": 25},
@@ -52,7 +53,19 @@ productos = [
     {"nombre": "Lentes de Seguridad Transparentes", "categoria": "Seguridad", "precio": 1990, "stock": 75}
 ]
 
+creados = 0
 for item in productos:
-    Producto.objects.create(**item)
+    _, creado = Producto.objects.get_or_create(
+        nombre=item["nombre"],
+        categoria=item["categoria"],
+        defaults={
+            "precio": item["precio"],
+            "stock": item["stock"],
+        },
+    )
+    creados += int(creado)
 
-print(f"Poblamiento exitoso: {Producto.objects.count()} productos creados.")
+print(
+    f"Poblamiento completado: {creados} productos nuevos; "
+    f"{Producto.objects.count()} productos en total."
+)
