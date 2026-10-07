@@ -64,8 +64,8 @@ class CatalogoTests(TestCase):
             {
                 'username': 'nuevo',
                 'email': 'nuevo@example.com',
-                'password1': 'CompraSegura123!',
-                'password2': 'CompraSegura123!',
+                'password1': '1234',
+                'password2': '1234',
             },
         )
 
