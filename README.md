@@ -38,6 +38,9 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
+Si `/catalogo/` muestra `no such table: catalogo_producto`, ejecuta
+`python manage.py migrate` desde la raíz del proyecto y reinicia el servidor.
+
 Si el curso exige una instancia MySQL específica, hay que reemplazar la
 configuración SQLite por los datos de conexión entregados por el docente e
 instalar el controlador indicado por él. No se incluyen credenciales de base
