@@ -23,12 +23,13 @@ class RegistroConsumidorForm(UserCreationForm):
 class ProductoForm(forms.ModelForm):
     class Meta:
         model = Producto
-        fields = ('nombre', 'categoria', 'precio', 'stock')
+        fields = ('nombre', 'categoria', 'precio', 'stock', 'imagen')
         labels = {
             'nombre': 'Nombre',
             'categoria': 'Categoría',
             'precio': 'Precio',
             'stock': 'Stock inicial',
+            'imagen': 'URL de la imagen (opcional)',
         }
 
 

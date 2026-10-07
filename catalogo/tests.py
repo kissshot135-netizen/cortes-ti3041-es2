@@ -22,12 +22,38 @@ class CatalogoTests(TestCase):
             password='Password12345!',
             is_staff=True,
         )
+        self.productos_iniciales = Producto.objects.count()
 
     def test_inicio_y_catalogo_cargan(self):
         self.assertEqual(self.client.get(reverse('inicio')).status_code, 200)
         respuesta = self.client.get(reverse('lista_productos'))
         self.assertEqual(respuesta.status_code, 200)
         self.assertContains(respuesta, 'Martillo')
+        self.assertContains(respuesta, 'Martillo de acero 16 oz')
+        self.assertContains(
+            respuesta,
+            'https://images.unsplash.com/photo-1679210208120-1b6a008be9b4',
+        )
+        self.assertContains(respuesta, 'row-cols-1')
+        self.assertContains(respuesta, self.producto.imagen or 'Sin imagen')
+
+    def test_catalogo_muestra_productos_agotados(self):
+        agotado = Producto.objects.create(
+            nombre='Producto agotado',
+            categoria='Herramientas',
+            precio=1000,
+            stock=0,
+        )
+
+        respuesta = self.client.get(reverse('lista_productos'))
+
+        self.assertContains(respuesta, agotado.nombre)
+        self.assertContains(respuesta, 'Agotado')
+        self.assertContains(respuesta, 'Sin stock disponible')
+        self.assertNotContains(
+            respuesta,
+            f'action="/catalogo/{agotado.pk}/comprar/"',
+        )
 
     def test_superusuario_puede_gestionar_productos_en_admin(self):
         superusuario = User.objects.create_superuser(
@@ -105,7 +131,7 @@ class CatalogoTests(TestCase):
         self.client.force_login(self.consumidor)
         self.assertEqual(self.client.get(url).status_code, 302)
         self.assertEqual(self.client.post(url, {}).status_code, 302)
-        self.assertEqual(Producto.objects.count(), 1)
+        self.assertEqual(Producto.objects.count(), self.productos_iniciales)
 
         self.client.force_login(self.administrador)
         self.assertEqual(self.client.get(url).status_code, 200)
@@ -126,3 +152,4 @@ class CatalogoTests(TestCase):
         )
         self.assertRedirects(respuesta, url)
         self.assertFalse(Producto.objects.filter(pk=taladro.pk).exists())
+        self.assertEqual(Producto.objects.count(), self.productos_iniciales)

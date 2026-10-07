@@ -6,6 +6,7 @@ class Producto(models.Model):
     categoria = models.CharField(max_length=50)
     precio = models.PositiveIntegerField()
     stock = models.PositiveIntegerField()
+    imagen = models.URLField(max_length=1000, blank=True)
 
     def __str__(self):
         return f"{self.nombre} (${self.precio})"
